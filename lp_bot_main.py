@@ -12,12 +12,12 @@ terra = LCDClient(chain_id="columbus-5", url="https://lcd.terra.dev")
 swap_amount = 10
 percent = 3
 
-
+bluna_contract = 'terra1jxazgm67et0ce260kvrpfv50acuushpjsz2y0p'
+lunaX_contract = 'terra1zrzy688j8g6446jzd88vzjzqtywh6xavww92hy'
 
 # terra.tx.search()
 
-def get_exchange_rate(amount):
-    contract = "terra1jxazgm67et0ce260kvrpfv50acuushpjsz2y0p"
+def get_exchange_rate(amount, contract):
     result = terra.wasm.contract_query(
         contract,
         {
@@ -65,17 +65,17 @@ while True:
                 print(command)
                 if command == '/swap' or command == '/swap@terralp_bot':
                     try:
-                        return_amount = int(get_exchange_rate(swap_amount)['return_amount'])                      
+                        return_amount = int(get_exchange_rate(swap_amount, lunaX_contract)['return_amount'])                      
                         exchange_rate = round(return_amount * 100 / (swap_amount * 1000000) - 100, 3)
                         if exchange_rate >= 0:
-                            telegram_bot_sendtext("Current Luna -> bLuna exchange rate is: ~" + str(exchange_rate)
+                            telegram_bot_sendtext("Current Luna -> LunaX exchange rate is: ~" + str(exchange_rate)
                                                   + "%\n\n" + str(swap_amount) + " Luna --> "
-                                                  + str(round(return_amount / 1000000, 3)) + " bLuna"
+                                                  + str(round(return_amount / 1000000, 3)) + " LunaX"
                                                   + "\n\n app.terraswap.io", chat_id)
                         elif exchange_rate < 0:
-                            telegram_bot_sendtext("Current bLuna -> Luna exchange rate is: ~" + str(exchange_rate * -1)
+                            telegram_bot_sendtext("Current LunaX -> Luna exchange rate is: ~" + str(exchange_rate * -1)
                                                   + "%\n\n" + str(round(return_amount / 1000000, 3))
-                                                  + " bLuna --> " + str(swap_amount) + " Luna"
+                                                  + " LunaX --> " + str(swap_amount) + " Luna"
                                                   + "\n\n app.terraswap.io", chat_id)
                     except LCDResponseError as err:
                         print(err)
@@ -90,7 +90,7 @@ while True:
                         print("Couldn't find key: " + str(k))
                         continue
                     except requests.exceptions.ConnectionError:
-                        print("Xonnection error")
+                        print("Connection error")
                         continue
                     except urllib3.exceptions.ProtocolError:
                         print("Protocol error")
@@ -126,7 +126,7 @@ while True:
                         print("Couldn't find key: " + str(k))
                         continue
                     except requests.exceptions.ConnectionError:
-                        print("Xonnection error")
+                        print("Connection error")
                         continue
                     except urllib3.exceptions.ProtocolError:
                         print("Protocol error")
@@ -135,13 +135,13 @@ while True:
                         print("Remote disconnected")
             msg_id = bot['result'][0]['message']['message_id']
         print("Attempt #" + str(count))
-        return_amount = int(get_exchange_rate(swap_amount)['return_amount'])
+        return_amount = int(get_exchange_rate(swap_amount, lunaX_contract)['return_amount'])
         exchange_rate = round(return_amount * 100 / (swap_amount * 1000000) - 100, 3)
         if exchange_rate >= percent:
             print("GO! Exchange is: " + str(exchange_rate) + "%")
             for i in bot_chat_ids:
                 telegram_bot_sendtext("GO GO GO! Swap gains: ~" + str(exchange_rate) + "%\n\n"
-                                  + str(swap_amount) + " Luna -> " + str(round(return_amount / 1000000, 3)) + " bLuna"
+                                  + str(swap_amount) + " Luna -> " + str(round(return_amount / 1000000, 3)) + " LunaX"
                                       + "\n\n app.terraswap.io", i)
             sleep(666)
             count += 1
@@ -149,7 +149,7 @@ while True:
             print("GO! Exchange is: " + str(exchange_rate) + "%")
             for i in bot_chat_ids:
                 telegram_bot_sendtext("GO GO GO! Swap gains: ~" + str(exchange_rate * -1) + "%\n\n"
-                                  + str(round(return_amount / 1000000, 3)) + " bLuna -> " + str(swap_amount) + " Luna"
+                                  + str(round(return_amount / 1000000, 3)) + " LunaX -> " + str(swap_amount) + " Luna"
                                       + "\n\n app.terraswap.io", i)
             sleep(666)
             count += 1
