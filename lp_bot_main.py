@@ -4,15 +4,17 @@ import urllib3.exceptions
 from terra_sdk.client.lcd import LCDClient
 from terra_sdk.exceptions import LCDResponseError
 from time import sleep
+from keys import bot_token
 
-bot_token = 'xxxxxxxxx'
 
-terra = LCDClient(chain_id="columbus-4", url="https://lcd.terra.dev")
+terra = LCDClient(chain_id="columbus-5", url="https://lcd.terra.dev")
 
 swap_amount = 10
-percent = 5
+percent = 3
 
-terra.tx.search()
+
+
+# terra.tx.search()
 
 def get_exchange_rate(amount):
     contract = "terra1jxazgm67et0ce260kvrpfv50acuushpjsz2y0p"
@@ -49,7 +51,7 @@ def telegram_bot_sendtext(bot_message, chat_id):
 
 msg_id = 0
 count = 0
-bot_chat_ids = ["-1001488852663"]
+bot_chat_ids = ["599722901"]
 
 while True:
     try:
@@ -63,7 +65,7 @@ while True:
                 print(command)
                 if command == '/swap' or command == '/swap@terralp_bot':
                     try:
-                        return_amount = int(get_exchange_rate(swap_amount)['return_amount'])
+                        return_amount = int(get_exchange_rate(swap_amount)['return_amount'])                      
                         exchange_rate = round(return_amount * 100 / (swap_amount * 1000000) - 100, 3)
                         if exchange_rate >= 0:
                             telegram_bot_sendtext("Current Luna -> bLuna exchange rate is: ~" + str(exchange_rate)
